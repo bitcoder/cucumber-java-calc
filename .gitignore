@@ -1,0 +1,8 @@
+*.json
+target/
+features/
+cloud_auth.json
+.classpath
+.settings/
+.project
+*.zip
