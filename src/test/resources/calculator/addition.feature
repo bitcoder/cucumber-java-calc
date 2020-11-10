@@ -1,4 +1,5 @@
-@REQ_CALC-7931
+#@REQ_CALC-7931
+@REQ_CALC-640
 Feature:  As a user, I can add two numbers
 
 Scenario: simple integer addition
@@ -7,7 +8,7 @@ Scenario: simple integer addition
         When I press add
         Then the result should be 3 on the screen
 
-Scenario: negative integer adition
+Scenario: negative integer addition
         Given I have entered -1 into the calculator
         And I have entered 2 into the calculator
         When I press add

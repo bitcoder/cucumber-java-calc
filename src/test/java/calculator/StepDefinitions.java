@@ -33,7 +33,7 @@ public class StepDefinitions {
 
     @Then("the result should be {int} on the screen")
     public void the_result_should_be_on_the_screen(Integer value) {
-        assertEquals(this.result, value);
+        assertEquals(value, this.result);
     }
     
 

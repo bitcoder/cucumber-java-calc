@@ -1,4 +1,5 @@
-@REQ_CALC-7935
+#@REQ_CALC-7935
+@REQ_CALC-641
 Feature:  As a user, I can multiply two numbers
 
 Scenario: simple integer multiplication
