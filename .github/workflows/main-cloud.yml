@@ -43,7 +43,7 @@ jobs:
         rm -f features/*.feature
         unzip -o $FEATURES_FILE  -d features
     - name: Run tests
-      run: mvn test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
+      run: mvn -fn test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
     - name: generate auxiliary JSON to define some fields on the Test Execution to be created
       run: |
         cat testexec_cloud_template.json  | sed s/PROJECT_KEY/${{ secrets.JIRACLOUD_PROJECT_KEY }}/g | sed s/TEST_ENVIRONMENT_NAME/jdk${{ env.JDK_VERSION }}/g | sed s/TESTPLAN_KEY/${{ github.event.inputs.test_plan_key }}/g > test_exec.json
