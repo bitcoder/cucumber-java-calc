@@ -39,7 +39,7 @@ jobs:
     - name: "Import results to Xray (cloud)"
       if: always()
       run: |
-        curl -X POST -H "Authorization: Bearer ${{ env.token }}" --data @"report.json" "$BASE_URL/api/v2/import/execution/cucumber"
+        curl -X POST -H "Authorization: Bearer ${{ env.token }}" --data @"report.json" "${{ secrets.XRAYCLOUD_BASE_URL }}/api/v2/import/execution/cucumber"
     - name: "Import results to Xray (cloud) using a GH action"
       if: ${{ false }}
       uses: mikepenz/xray-action@v2.4.5
