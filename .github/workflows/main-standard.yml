@@ -1,0 +1,47 @@
+name: CI with Xray cloud (standard endpoint)
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_plan_key:
+        description: 'Test Plan issue key'
+        required: false
+        default: ''
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      JDK_VERSION: 11
+      
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ env.JDK_VERSION }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: '${{ env.JDK_VERSION }}'
+        distribution: 'adopt'
+    - name: Build with Maven
+      run: mvn clean compile -B package --file pom.xml
+    - name: generate auxiliary JSON for authenticating with Xray cloud and obtain token
+      run: |
+        cat cloud_auth.json.sample  | sed s/CLIENT_ID/${{ secrets.XRAYCLOUD_CLIENT_ID }}/g | sed s/CLIENT_SECRET/${{ secrets.XRAYCLOUD_CLIENT_SECRET }}/g > cloud_auth.json
+        echo token=$(curl -H "Content-Type: application/json" -X POST --data @"cloud_auth.json" ${{ secrets.XRAYCLOUD_BASE_URL }}/api/v2/authenticate| tr -d '"') >> $GITHUB_ENV
+    - name: Export scenarios from Xray and generate .feature file(s)
+      run: |
+        FEATURES_FILE=features.zip
+        rm -f $FEATURES_FILE
+        curl -H "Content-Type: application/json" -X GET -H "Authorization: Bearer ${{ env.token }}" "${{ secrets.XRAYCLOUD_BASE_URL }}/api/v2/export/cucumber?keys=${{ github.event.inputs.test_plan_key }}" -o $FEATURES_FILE
+        rm -f features/*.feature
+        unzip -o $FEATURES_FILE  -d features
+    - name: Run tests
+      run: mvn -fn test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
+    - name: "Import results to Xray (cloud) using a GH action"
+      if: always()
+      uses: mikepenz/xray-action@v2.4.5
+      with:
+         username: "${{ secrets.XRAYCLOUD_CLIENT_ID }}"
+         password: "${{ secrets.XRAYCLOUD_CLIENT_SECRET }}"
+         xrayCloud: "true"
+         testFormat: "cucumber"
+         testPaths: "report.json"
