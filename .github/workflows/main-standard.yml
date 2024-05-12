@@ -36,8 +36,12 @@ jobs:
         unzip -o $FEATURES_FILE  -d features
     - name: Run tests
       run: mvn -fn test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
-    - name: "Import results to Xray (cloud) using a GH action"
+    - name: "Import results to Xray (cloud)"
       if: always()
+      run: |
+        curl -X POST -H "Authorization: Bearer ${{ env.token }}" --data @"report.json" "${{ secrets.XRAYCLOUD_BASE_URL }}/api/v2/import/execution/cucumber"
+    - name: "Import results to Xray (cloud) using a GH action"
+      if: ${{ false }}
       uses: mikepenz/xray-action@v2.4.5
       with:
          username: "${{ secrets.XRAYCLOUD_CLIENT_ID }}"
