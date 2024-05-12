@@ -22,7 +22,7 @@ jobs:
         java-version: '${{ env.JDK_VERSION }}'
         distribution: 'adopt'
     - name: Build with Maven
-      run: mvn clean compile -B package --file pom.xml
+      run: mvn clean compile -B --file pom.xml
     - name: generate auxiliary JSON for authenticating with Xray cloud and obtain token
       run: |
         cat cloud_auth.json.sample  | sed s/CLIENT_ID/${{ secrets.XRAYCLOUD_CLIENT_ID }}/g | sed s/CLIENT_SECRET/${{ secrets.XRAYCLOUD_CLIENT_SECRET }}/g > cloud_auth.json
